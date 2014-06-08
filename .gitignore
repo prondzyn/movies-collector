@@ -1,0 +1,5 @@
+collector/.idea
+collector/.gradle
+collector/build
+collector/out
+collector/*.iml

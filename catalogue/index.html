@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="nofollow" />
+    <meta name="description" content="" />
+    <title>Prondzyn's Cinema</title>
+	  <link rel="icon" href="images/favicon.ico" />
+    <style type="text/css" title="currentStyle">
+      @import "css/page.css";
+      @import "css/table_jui.css";
+      @import "css/smoothness/jquery-ui-1.10.2.custom.min.css";
+    </style>
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/jquery.dataTables.min.js"></script>
+    <script src="js/jquery-ui-1.10.2.custom.min.js"></script>
+    <script src="js/cinema.js"></script>
+  </head>
+  <body id="body_container">
+    <div id="result">
+      Searching movies...
+	  </div>
+    <script>
+	    $(document).ready(function() {
+	      $.ajax({
+		      dataType: "json",
+	        url: 'movies.json', 
+	  	    success: function(data) {
+			      if (data.length > 0) {
+		          $('#result').html('<table id="movies"><thead><tr><th>Polish Title</th><th>Original Title</th><th>Year</th><th>Meta</th><th>Format</th><th>Size (in&nbsp;MB)</th><th>Last Modified</th><th>&nbsp;</th></tr></thead><tbody id="records"></tbody></table>');
+            }
+			      for (var i=0; i < data.length; i++) {
+              // build Title
+              var title = prepareTitle(data[i].title, data[i].meta);
+              if (title) {
+                title = '<a href="'+filmwebHref(title)+'" target="_blank" title="Search on Filmweb">'+title+'</a>';
+              }
+              // build Original Title
+              var oTitle = prepareTitle(data[i].originalTitle, data[i].meta);
+              if (oTitle) {
+                oTitle = '<a href="'+filmwebHref(oTitle)+'" target="_blank" title="Search on Filmweb">'+oTitle+'</a>';
+              } else {
+                oTitle = data[i].name;
+              }
+              // build Year
+              var year = prepareYear(data[i],'','');
+              // build Meta
+              var meta = prepareMeta(data[i],'');
+              // build Format
+              var format = data[i].format || '';
+              // build Size
+              var size = data[i].size;
+              // build Last Modified
+              var lMod = data[i].lastModified;
+              if (lMod) {
+                lMod = '<span style="white-space:nowrap;">'+lMod+'</span>';
+              }
+              // build dialog opener
+              var opener = '<span class="ui-icon ui-icon-info movie-info-opener" objectkey="'+i+'" style="cursor:pointer;">&nbsp;</span>';
+              // append row
+              $('#records').append('<tr><td>'+title+'</td><td>'+oTitle+'</td><td>'+year+'</td><td>'+meta+'</td>><td>'+format+'</td><td>'+size+'</td><td>'+lMod+'</td><td>'+opener+'</td></tr>');
+            }
+            // prepare file info dialogs
+            $('.movie-info-opener').click(function() {
+              var objectKey = $(this).attr('objectkey');
+              $.ajax({
+                dataType: "json",
+                url: 'movies.json', 
+                success: function(data) {
+                  var movieInfo = data[objectKey];
+                  var initTitle = prepareTitle(movieInfo.title, movieInfo.meta);
+                  var searchOnFilmwebHref = filmwebHref(initTitle);
+                  var newDialog 
+                    = $('<div id="movie-info">\
+                           <div><span class="movie-info-label">File:</span> '+movieInfo.name+'</div>\
+                           <div><span class="movie-info-label">Path:</span> '+movieInfo.path+'</div>\
+                           <div><span class="movie-info-label">Meta:</span> '+prepareMeta(movieInfo,'--')+'</div>\
+                           <div><span class="movie-info-label">Format:</span> '+movieInfo.format+'</div>\
+                           <div><span class="movie-info-label">Size:</span> '+movieInfo.size+' MB</div>\
+                         </div>');
+                  var dialogTitle = 'Movie Info: '+movieInfo.name;
+                  if (movieInfo.title && movieInfo.originalTitle && movieInfo.year) {
+                    var title = prepareTitle(movieInfo.title, movieInfo.meta);
+                    var oTitle = prepareTitle(movieInfo.originalTitle, movieInfo.meta);
+                    dialogTitle = title + " / " + oTitle;
+                    if (movieInfo.year != 'NA') {
+                      dialogTitle += " (" + movieInfo.year + ")"; 
+                    }
+                  }
+                  newDialog.dialog({
+                    modal: true,
+                    title: dialogTitle,
+                    show: 'clip',
+                    hide: 'clip',
+                    width: 650,
+                    height: 210,
+                    buttons: [
+                      {
+                        id: "button-search-on-filmweb",
+                        text: "Search on Filmweb",
+                        click: function() {
+                          window.open(searchOnFilmwebHref);
+                        }
+                      }
+                    ],
+                    open: function(event, ui) {
+                      if (!(movieInfo.title)) {
+                        $('#button-search-on-filmweb').button("disable");
+                      }
+                    },
+                    close: function(event, ui) {
+                      $(this).dialog("destroy");
+                    }
+                  });
+                  return false;
+                }
+              });
+            });
+            // build data table
+            oTable = $('#movies').dataTable({
+              "bJQueryUI": true,
+              "sPaginationType": "full_numbers",
+              "aLengthMenu": [
+                [10, 25, 50, 100, 200, -1],
+                [10, 25, 50, 100, 200, "All"]
+              ], 
+              "iDisplayLength": 25,
+              "aaSorting": [[ 6, "desc" ]],
+              "bAutoWidth": false,
+              "aoColumns": [
+                { "sType" : "cinemaString" },
+                { "sType" : "cinemaString" },
+                { "sType" : "cinemaString", "sClass": "alignCenter" },
+                { "sType" : "cinemaString", "sClass": "alignCenter" },
+                { "sType" : "cinemaString", "sClass": "alignCenter" },
+                { "sClass": "alignCenter" },
+                { "sClass": "alignCenter" },
+                { "bSortable": false, "sWidth": "10px", "sClass": "alignCenter"}
+              ]
+            });
+            oTable.css("width","100%");
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
