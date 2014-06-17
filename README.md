@@ -5,10 +5,10 @@ Movies Collector is a small tool which builds a library of movies from local dir
 
 ## Script
 
-Source code of the collector script can be found in the [collector](tree/master/collector) directory. The program written in Java is packed as a single JAR file and requires two parameters to execute:
+Source code of the collector script can be found in the [collector](../../tree/master/collector) directory. The program written in Java is packed as a single JAR file and requires two parameters to execute:
 
 1. a path to the root of movies directory
-2. a path to the output JSON file (a file example: [movies.json](tree/master/catalogue/movies.json))
+2. a path to the output JSON file (a file example: [movies.json](catalogue/movies.json))
 
 ### Example of usage
 ```
@@ -38,7 +38,7 @@ Underscore chars separate four sections:
 Dots separates words in each section.
 
 ## Displayer
-The [catalogue](tree/master/catalogue) directory contains an example (in HTML with [DataTables](https://datatables.net/)) of how the JSON output file can be displayed for a simpler movies list review.
+The [catalogue](../../tree/master/catalogue) directory contains an example (in HTML with [DataTables](https://datatables.net/)) of how the JSON output file can be displayed for a simpler movies list review.
 
 ![Screen shot of the HTML catalogue.](catalogue.png)
 
