@@ -67,3 +67,5 @@ will be read as following:
 | Native Title | Original Title | Year | Metadata | Format |
 |--------------|----------------|:----:|:--------:|:------:|
 | Detektyw     | True Detective | 2014 |  S01E06  |  AVI   |
+
+The series and episode number (S01E06) is cut of the native title and is displayed only in the metadata column.
